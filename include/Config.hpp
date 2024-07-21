@@ -1,12 +1,16 @@
 #pragma once
 #include <cstdint>
+#include <string>
 
 namespace Config{
+  constexpr std::string window_title{"Chip-8"};
+  const uint8_t window_width{};
+  const uint8_t window_height{};
   const unsigned int START_ADDRESS = 0x200;
   const unsigned int FONTSET_SIZE = 80;
   const unsigned int FONTSET_START_ADDRESS = 0x50;
 
-  uint8_t fontset[FONTSET_SIZE] = {
+  const uint8_t fontset[FONTSET_SIZE] = {
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
     0x20, 0x60, 0x20, 0x20, 0x70, // 1
     0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2

@@ -1,3 +1,4 @@
+#include <cstring>
 #include "../include/Chip8.hpp"
 #include "../include/Config.hpp"
 #include <fstream>
@@ -45,3 +46,17 @@ void Chip8::loadROM(char const *filename) {
     delete[] buffer;
   }
 }
+
+// CLR - clear the display
+void Chip8::_00E0(){
+  for (uint32_t i = 0; i < video.size(); i++){
+    video.at(i) = 0;
+  }
+}
+
+// return from a subroutine
+void Chip8::_00EE(){
+
+}
+
+//Jump the location nnn

@@ -1,3 +1,4 @@
+#pragma once
 #include <array>
 #include <cstdint>
 
@@ -17,4 +18,8 @@ public:
 
   Chip8();
   void loadROM(char const *filename);
+
+  void _00E0(); // CLR - clear the display
+  void _00EE(); // reutrn froma subroutine
+  void _1nnn(); //Jump the location nnn
 };    
