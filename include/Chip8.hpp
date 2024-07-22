@@ -22,4 +22,13 @@ public:
   void _00E0(); // CLR - clear the display
   void _00EE(); // reutrn froma subroutine
   void _1nnn(); //Jump the location nnn
+  void _2nnn(); // Call subroutine at nnn
+  void _3xkk(); // Skip next instruction if Vx = kk
+  void _4xkk(); //Skip next instruction if Vx != kk
+  void _5xy0(); // Skip next instruction if Vx = Vy
+  void _6xkk(); //set Vx = kk
+  void _7xkk(); //set Vx = Vx + kk (ADD Vx, byte)
+  void _8xy0(); // set Vx = Vy
+  void _8xy1(); // set Vx = Vx OR Vy
+
 };    

@@ -56,7 +56,83 @@ void Chip8::_00E0(){
 
 // return from a subroutine
 void Chip8::_00EE(){
-
+  --sp;
+  pc = stack[sp];
 }
 
 //Jump the location nnn
+void Chip8::_1nnn(){
+}
+
+// Call subroutine at nnn
+void Chip8::_2nnn(){
+  uint16_t address = opcode & 0x0FFFu;
+
+  stack[sp] = pc;
+  ++sp;
+  pc = address;
+}
+
+// Skip next instruction if Vx == kk
+void Chip8::_3xkk(){
+  uint8_t Vx = (opcode & 0x0F00u)>>8u;
+  uint8_t byte = opcode & 0xFFFu;
+
+  if(registers[Vx] == byte){
+    pc+=2;
+  }
+}
+
+// Skip next instruction if Vx == kk
+void Chip8::_4xkk(){
+  uint8_t Vx = (opcode & 0x0F00u)>>8u;
+  uint8_t byte = opcode & 0xFFFu;
+
+  if(registers[Vx] != byte){
+    pc+=2;
+  }
+}
+
+//Skip next instruction if Vx = Vy
+void Chip8::_5xy0(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+  uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+  if(registers[Vx] == registers[Vy]){
+    pc+=2;
+  }
+}
+
+// Set Vx = kk
+void Chip8::_6xkk(){
+  uint8_t Vx = (opcode & 0x0F00) >> 8u;
+  uint8_t byte = (opcode & 0x00FF);
+
+  registers[Vx] = byte;
+}
+
+
+// Set Vx = Vx + kk ( ADD Vx, byte)
+void Chip8::_7xkk(){
+  uint8_t Vx = (opcode & 0x0F00) >> 8u;
+  uint8_t byte = (opcode & 0x0FF);
+
+  registers[Vx] = registers[Vx] + byte;
+}
+
+// Set Vx = Vy
+void Chip8::_8xy0(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+  uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+  registers[Vx] = registers[Vy];
+}
+
+// set Vx = Vx OR Vy
+void Chip8::_8xy1(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+  uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+  registers[Vx] = registers[Vx] | registers[Vy];
+
+}

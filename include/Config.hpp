@@ -3,9 +3,9 @@
 #include <string>
 
 namespace Config{
-  constexpr std::string window_title{"Chip-8"};
-  const uint8_t window_width{};
-  const uint8_t window_height{};
+  const std::string window_title{"Chip-8"};
+  const uint8_t window_width{64};
+  const uint8_t window_height{64};
   const unsigned int START_ADDRESS = 0x200;
   const unsigned int FONTSET_SIZE = 80;
   const unsigned int FONTSET_START_ADDRESS = 0x50;
