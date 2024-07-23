@@ -20,15 +20,21 @@ public:
   void loadROM(char const *filename);
 
   void _00E0(); // CLR - clear the display
-  void _00EE(); // reutrn froma subroutine
-  void _1nnn(); //Jump the location nnn
+  void _00EE(); // Reutrn froma subroutine
+  void _1nnn(); // Jump the location nnn
   void _2nnn(); // Call subroutine at nnn
   void _3xkk(); // Skip next instruction if Vx = kk
-  void _4xkk(); //Skip next instruction if Vx != kk
+  void _4xkk(); // Skip next instruction if Vx != kk
   void _5xy0(); // Skip next instruction if Vx = Vy
-  void _6xkk(); //set Vx = kk
-  void _7xkk(); //set Vx = Vx + kk (ADD Vx, byte)
-  void _8xy0(); // set Vx = Vy
-  void _8xy1(); // set Vx = Vx OR Vy
-
+  void _6xkk(); // Set Vx = kk
+  void _7xkk(); // set Vx = Vx + kk (ADD Vx, byte)
+  void _8xy0(); // Set Vx = Vy
+  void _8xy1(); // Set Vx = Vx OR Vy
+  void _8xy2(); // Set Vx = Vx AND Vy
+  void _8xy3(); // Set Vx = Vx XOR Vy
+  void _8xy4(); // Set Vx = Vx + Vy, set VF = Carry
+  void _8xy5(); // Set Vx = Vx - Vy, set VF = Not Borrow
+  void _8xy6(); // Set Vx = Vx SRH 1
+  void _8xy7(); // Set Vx = Vy - Vx, set VF = Not Borrow
+  void _8xyE(); // Set Vx = Vx SHL 1. 
 };    
