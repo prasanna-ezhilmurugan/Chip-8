@@ -4,8 +4,10 @@
 
 namespace Config{
   const std::string window_title{"Chip-8"};
-  const uint8_t window_width{64};
-  const uint8_t window_height{64};
+  const int window_width{};
+  const int window_height{};
+  const int texture_width{};
+  const int texture_height{};
   const unsigned int START_ADDRESS = 0x200;
   const unsigned int FONTSET_SIZE = 80;
   const unsigned int FONTSET_START_ADDRESS = 0x50;

@@ -49,6 +49,10 @@ void Chip8::loadROM(char const *filename) {
   }
 }
 
+void Chip8::cycle(){
+
+}
+
 // CLR - clear the display
 void Chip8::_00E0(){
   for (uint32_t i = 0; i < video.size(); i++){

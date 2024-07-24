@@ -7,7 +7,8 @@
 class Platform{
   public:
     Platform();
-    void handle_events();
+    void handle_events(uint8_t* keys);
+    void update(void const* buffer, int pitch);
     bool get_is_running(){
       return m_running;
     }
