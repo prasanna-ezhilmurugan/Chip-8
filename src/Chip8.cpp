@@ -5,15 +5,16 @@
 #include <iosfwd>
 #include <random>
 
+// 8-bit random number generation 
 std::random_device rng{};
 std::mt19937 mt_engine{rng()};
 std::uniform_int_distribution<uint32_t> dist{0, 255};
 
-uint8_t generate_random() {
+uint8_t generate_random_byte() {
   return static_cast<uint8_t>(dist(mt_engine));
 }
 
-
+// constructor 
 Chip8::Chip8() {
   pc = Config::START_ADDRESS;
 
@@ -23,6 +24,7 @@ Chip8::Chip8() {
   }
 }
 
+// loading ROM 
 void Chip8::loadROM(char const *filename) {
   // open the file as a stream and move the pointer to the end of the file
   std::ifstream file(filename, std::ios::binary | std::ios::ate);
@@ -62,6 +64,9 @@ void Chip8::_00EE(){
 
 //Jump the location nnn
 void Chip8::_1nnn(){
+  uint16_t address = (opcode & 0x0FFFu);
+
+  pc = address;
 }
 
 // Call subroutine at nnn
@@ -187,10 +192,9 @@ void Chip8::_8xy5(){
 // set Vx = Vx SHR 1
 void Chip8::_8xy6(){
   uint8_t Vx = (opcode & 0x0F00u) >> 8u;
-  uint8_t Vy = (opcode & 0x00F0u) >> 4u;
 
-  
-
+  registers[Vx] = (opcode & 0x1u);
+  registers[Vx]>>=1;
 }
 
 // set Vx= Vy - Vx, set VF = Not Borrow
@@ -209,5 +213,215 @@ void Chip8::_8xy7(){
 
 // set Vx = Vy SHL 1
 void Chip8::_8xyE(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
 
+  registers[Vx] = (opcode & 0x80u) >> 7u;
+  registers[Vx] <<= 1;
+}
+
+// Skip the next instruction if Vx != Vy
+void Chip8::_9xy0(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+  uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+
+  if( registers[Vx] != registers[Vy]){
+    pc+=2;
+  }
+}
+
+// Set Index = nnn
+void Chip8::_Annn(){
+  uint16_t address = (opcode & 0x0FFFu);
+
+  index = address;
+}
+
+// Jump to the location nnn + 10
+void Chip8::_Bnnn(){
+  uint16_t address = (opcode & 0x0FFFu);
+
+  pc = address + registers[0x0u];
+}
+
+// Set Vx = random byte AND kk
+void Chip8::_Cxkk(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+  registers[Vx] = generate_random_byte();
+}
+
+// Draw Vx, Vy starting at the memory location I at  (Vx, Vy), set VF = collision
+void Chip8::_Dxyn(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+  uint8_t Vy = (opcode & 0x00F0u) >> 4u;
+  uint8_t height = (opcode & 0x000Fu);
+
+  // wrap if going beyond the screen boundaries
+  uint8_t x_pos = registers[Vx] % Config::window_width;
+  uint8_t y_pos = registers[Vy] % Config::window_height;
+
+  registers[0xF] = 0;
+
+  for( unsigned int row = 0; row < height; ++row){
+    uint8_t sprite_byte = memory[index + row];
+
+    for (unsigned int column = 0; column < 8; ++column){
+      uint8_t sprite_pixel = sprite_byte & (0x80 >> column);
+      uint32_t* screen_pixel = &video[(y_pos + row) * Config::window_width + (x_pos + column)];
+
+			if (sprite_pixel)
+			{
+				if (*screen_pixel == 0xFFFFFFFF)
+				{
+					registers[0xF] = 1;
+				}
+				*screen_pixel ^= 0xFFFFFFFF;
+			}
+    }
+  }
+}
+
+// Skip the next instruction if the key with the value of Vx is pressed
+void Chip8::_Ex9E(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+  uint8_t key = registers[Vx];
+  if(keypad[key]){
+    pc+=2;
+  }
+}
+
+// Skip the next instruction if the key with the value of Vx is pressed
+void Chip8::_ExA1(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+  uint8_t key = registers[Vx];
+  if(!keypad[key]){
+    pc+=2;
+  }
+} 
+
+// Set Vx = delay timer value
+void Chip8::_Fx07(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+  registers[Vx] = delay_timer;
+}
+
+// Wait for the key press and set the value of that key in Vx
+void Chip8::_Fx0A(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+  if(keypad[0]){
+    registers[Vx] = 0;
+  }
+  else if(keypad[1]){
+    registers[Vx] = 1;
+  }
+  else if(keypad[2]){
+    registers[Vx] = 2;
+  }
+  else if(keypad[3]){
+    registers[Vx] = 3;
+  }
+  else if(keypad[4]){
+    registers[Vx] = 4;
+  }
+  else if(keypad[5]){
+    registers[Vx] = 5;
+  }
+  else if(keypad[6]){
+    registers[Vx] = 6;
+  }
+  else if(keypad[7]){
+    registers[Vx] = 7;
+  }
+  else if(keypad[8]){
+    registers[Vx] = 8;
+  }
+  else if(keypad[9]){
+    registers[Vx] = 9;
+  }
+  else if(keypad[10]){
+    registers[Vx] = 10;
+  }
+  else if(keypad[11]){
+    registers[Vx] = 11;
+  }
+  else if(keypad[12]){
+    registers[Vx] = 12;
+  }
+  else if(keypad[13]){
+    registers[Vx] = 13;
+  }
+  else if(keypad[14]){
+    registers[Vx] = 14;
+  }
+  else if(keypad[15]){
+    registers[Vx] = 15;
+  }
+  else {
+    pc-=2;
+  }
+}
+
+// Set delay_timer = Vx
+void Chip8::_Fx07(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+  delay_timer = registers[Vx];
+}
+
+// Set sound_timer = Vx
+void Chip8::_Fx18(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+  sound_timer = registers[Vx];
+}
+
+// set index = index + Vx
+void Chip8::_Fx1E(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+  index = index + registers[Vx];
+}
+
+// Set I = location of sprite for the digit Vx
+void Chip8::_Fx29(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+  uint8_t digit = registers[Vx];
+
+  index = Config::FONTSET_START_ADDRESS + (digit * 5);
+}
+
+// Store BCD representation of the Vx in memory location T, I+1, I+2
+void Chip8::_Fx33(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+  uint8_t decimal = registers[Vx];
+
+  memory[index+2] = decimal%10;
+  decimal/=10;
+
+  memory[index+1] = decimal%10;
+  decimal/=10;
+
+  memory[index] = decimal%10;
+}
+
+// Store registers V0 through Vx in memory starting at memory location index
+void Chip8::_Fx55(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+  for (uint8_t i = 0; i <= Vx; i++){
+    memory[index + i] = registers[i];
+  }
+}
+
+// Read registers V0 through Vx from the memory starting at location I 
+void Chip8::_Fx65(){
+  uint8_t Vx = (opcode & 0x0F00u) >> 8u;
+
+  for (uint8_t i = 0; i < Vx; i++){
+    registers[i] = memory[index + i];
+  }
 }
