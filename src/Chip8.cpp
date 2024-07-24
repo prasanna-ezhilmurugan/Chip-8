@@ -49,8 +49,148 @@ void Chip8::loadROM(char const *filename) {
   }
 }
 
-void Chip8::cycle(){
 
+// function for decoding the opcode and executing the instruction
+void Chip8::decode(){
+  switch((opcode & 0xF000u)){
+    // the entire code is unique
+    case 1:
+      _1nnn();
+      break;
+    case 2:
+      _2nnn();
+      break;
+    case 3:
+      _3xkk();
+      break;
+    case 4:
+      _4xkk();
+      break;
+    case 5:
+      _5xy0();
+      break;
+    case 6:
+      _6xkk();
+      break;
+    case 7:
+      _7xkk();
+      break;
+    case 9:
+      _9xy0();
+      break;
+    case 0xA:
+      _Annn();
+      break;
+    case 0xB:
+      _Bnnn();
+      break;
+    case 0xC:
+      _Cxkk;
+    case 0xD:
+      _Dxyn();
+
+    // the first digit repeats but the last digit is unique
+    case 8:
+    {
+      switch(opcode & 0x000Fu){
+        case 0:
+          _8xy0();
+          break;
+        case 1:
+          _8xy1();
+          break;
+        case 2:
+          _8xy2();
+          break;
+        case 3:
+          _8xy3();
+          break;
+        case 4:
+          _8xy4();
+          break;
+        case 5:
+          _8xy5();
+          break;
+        case 6:
+          _8xy6();
+          break;
+        case 7:
+          _8xy7();
+          break;
+        case 0xE:
+          _8xyE();
+          break;
+      }
+    }
+    // the first 3 digits are $00E but the fourth digit is unique
+    case 0:
+      if(opcode & 0x000Fu == 0x0){
+        _00E0();
+      } else {
+        _00EE();
+      }
+
+    // the first digit repeats but the last two digital are unique
+    case 0xE:
+      if(opcode & 0x00FFu == 0xA1){
+        _ExA1();
+      } else if(opcode & 0x00FFu == 0x9E){
+        _Ex9E();
+      }
+    case 0xF:
+    {
+      switch(opcode & 0x00FFu){
+        case 0x07:
+          _Fx07();
+          break;
+        case 0x0A:
+          _Fx0A();
+          break;
+        case 0x15:
+          _Fx0A();
+          break;
+        case 0x18:
+          _Fx15();
+          break;
+        case 0x1E:
+          _Fx18();
+          break;
+        case 0x29:
+          _Fx29(); 
+          break;
+        case 0x33:
+          _Fx33();
+          break;
+        case 0x55:
+          _Fx55();
+          break;
+        case 0x65:
+          _Fx65();
+          break;
+      }
+    }
+  }
+}
+
+void Chip8::cycle(){
+  // Fetch the instruction from the memory
+  opcode = (memory[pc] << 8u) | memory[pc + 1];
+
+  //incrementing the program counter pc 
+  pc+=2;
+
+  //decode and execute the instructions
+  decode(); 
+
+  // Decrement the delay_timer if it is being set
+  if (delay_timer > 0){
+    --delay_timer;
+  }
+  
+  // Decrement the sound_timer if it is beign set
+  if(sound_timer > 0){
+    --sound_timer;
+  }
 }
 
 // CLR - clear the display

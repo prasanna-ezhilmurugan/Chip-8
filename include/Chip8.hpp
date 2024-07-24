@@ -18,6 +18,7 @@ public:
 
   Chip8();
   void loadROM(char const *filename);
+  void decode();
   void cycle();
 
   void _00E0(); // CLR - clear the display
