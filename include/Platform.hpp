@@ -6,9 +6,9 @@
 
 class Platform{
   public:
-    Platform();
-    void handle_events(uint8_t* keys);
-    void update(void const* buffer, int pitch);
+    Platform(int window_width, int window_height, int texture_width, int texture_height);
+    void handle_events(std::array<uint8_t, 16> &keys);
+    void update(const void* buffer, int pitch);
     bool get_is_running(){
       return m_running;
     }

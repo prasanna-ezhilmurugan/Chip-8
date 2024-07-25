@@ -401,8 +401,8 @@ void Chip8::_Dxyn(){
   uint8_t height = (opcode & 0x000Fu);
 
   // wrap if going beyond the screen boundaries
-  uint8_t x_pos = registers[Vx] % Config::window_width;
-  uint8_t y_pos = registers[Vy] % Config::window_height;
+  uint8_t x_pos = registers[Vx] % Config::video_width;
+  uint8_t y_pos = registers[Vy] % Config::video_height;
 
   registers[0xF] = 0;
 
@@ -411,7 +411,7 @@ void Chip8::_Dxyn(){
 
     for (unsigned int column = 0; column < 8; ++column){
       uint8_t sprite_pixel = sprite_byte & (0x80 >> column);
-      uint32_t* screen_pixel = &video[(y_pos + row) * Config::window_width + (x_pos + column)];
+      uint32_t* screen_pixel = &video[(y_pos + row) * Config::video_width + (x_pos + column)];
 
 			if (sprite_pixel)
 			{

@@ -5,8 +5,8 @@
 #include <stdexcept>
 
 namespace Loader{
-  SDL_Window* create_window_or_throw(){
-    SDL_Window* window = SDL_CreateWindow(Config::window_title.data(), 0, 0, Config::window_width, Config::window_height, SDL_WINDOW_SHOWN);
+  SDL_Window* create_window_or_throw(int window_width, int window_height){
+    SDL_Window* window = SDL_CreateWindow(Config::window_title.data(), 0, 0, window_width, window_height, SDL_WINDOW_SHOWN);
     if(!window){
       throw std::runtime_error("Failed to create window");
       return nullptr;
@@ -26,8 +26,8 @@ namespace Loader{
     return renderer;
   }
 
-  SDL_Texture* create_texture_or_throw(SDL_Renderer * renderer){
-    SDL_Texture * texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, Config::texture_width, Config::texture_height);
+  SDL_Texture* create_texture_or_throw(SDL_Renderer * renderer, int texture_width, int texture_height){
+    SDL_Texture * texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, texture_width, texture_height);
 
     if(!texture){
       throw std::runtime_error("Failed to create renderer");
@@ -38,15 +38,15 @@ namespace Loader{
   }
 }
 
-Platform::Platform()
-  :m_window{Loader::create_window_or_throw(), SDL_DestroyWindow}, m_renderer{Loader::create_renderer_or_throw(m_window.get()), SDL_DestroyRenderer}, m_texture{Loader::create_texture_or_throw(m_renderer.get()), SDL_DestroyTexture}
+Platform::Platform(int window_width, int window_height, int texture_width, int texture_height)
+  :m_window{Loader::create_window_or_throw(window_width, window_height), SDL_DestroyWindow}, m_renderer{Loader::create_renderer_or_throw(m_window.get()), SDL_DestroyRenderer}, m_texture{Loader::create_texture_or_throw(m_renderer.get(), texture_width, texture_height), SDL_DestroyTexture}
 {
   if (SDL_Init(SDL_INIT_VIDEO) !=0){
     throw std::runtime_error("Failed to initialize SDL");
   }
 }
 
-void Platform::handle_events(uint8_t* keys){
+void Platform::handle_events(std::array<uint8_t, 16> &keys){
   while(SDL_PollEvent(&m_event)){
     switch (m_event.type)
     {

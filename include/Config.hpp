@@ -4,15 +4,13 @@
 
 namespace Config{
   const std::string window_title{"Chip-8"};
-  const int window_width{};
-  const int window_height{};
-  const int texture_width{};
-  const int texture_height{};
-  const unsigned int START_ADDRESS = 0x200;
-  const unsigned int FONTSET_SIZE = 80;
-  const unsigned int FONTSET_START_ADDRESS = 0x50;
+  const unsigned int video_width{64};
+  const unsigned int video_height{32};
+  const unsigned int START_ADDRESS{0x200};
+  const unsigned int FONTSET_SIZE{80};
+  const unsigned int FONTSET_START_ADDRESS{0x50};
 
-  const uint8_t fontset[FONTSET_SIZE] = {
+  const std::array<uint8_t, FONTSET_SIZE>fontset{
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
     0x20, 0x60, 0x20, 0x20, 0x70, // 1
     0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
